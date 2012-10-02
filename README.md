@@ -9,6 +9,12 @@ Originally this code was written to quickly calculate descriptive statistics for
 
 The saved point clouds can be quite dense, so in some instances it is best to reduce the number of total points prior to meshing. Have a look at [MeshLab](http://meshlab.sourceforge.net/) for meshing and mesh refinement.
 
+Dependencies
+------------
+* [pydicom](http://code.google.com/p/pydicom/)
+* [Python Imaging Library](http://www.pythonware.com/products/pil/)
+* numpy, scipy, pylab
+
 TODO's
 ------
 * convert into a proper Python module
