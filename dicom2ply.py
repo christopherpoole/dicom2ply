@@ -235,5 +235,5 @@ class Patient(object):
     
 if __name__ == "__main__":
     patient = Patient(sys.argv[1])
-    patient.dump_ply(directory='.')
+    patient.dump_ply(directory=sys.argv[2])
 

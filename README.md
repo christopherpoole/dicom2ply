@@ -3,7 +3,7 @@ Convert DICOM-RT Structures to a PLY Point Cloud
 
 This is a very simple utility to convert any structures found in a DICOM-RT data set to individual PLY files for subsequent surface meshing. This will dump a bunch of PLY files into the current directory:
 
-    python dicom2ply.py dicom_dir
+    python dicom2ply.py dicom_dir output_dir
 
 Originally this code was written to quickly calculate descriptive statistics for each structure; some of this information is included in the PLY header.
 
