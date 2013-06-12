@@ -45,11 +45,15 @@ class Contour(object):
         self._stats()        
         
     def _stats(self):
-        self.slice_file = dicom.read_file("%s/CT.%s.dcm" % (self.dicom_dir, self.slice_ref))
-        self.slice_data = self.slice_file.PixelArray
-        
-        x = numpy.array(self.x)# + 256
-        y = numpy.array(self.y) + self.slice_file.TableHeight
+        self.slice_file = dicom.read_file("%s/CT%s.dcm" % (self.dicom_dir, self.slice_ref))
+        self.slice_data = self.slice_file.pixel_array
+
+        self.position = self.slice_file.ImagePositionPatient 
+        self.resolution = self.slice_file.PixelSpacing
+        self.thickness = self.slice_file.SliceThickness
+
+        x = numpy.array(self.x) + self.slice_file.TableHeight
+        y = numpy.array(self.y) + 256
                 
         self.mask = self._get_mask(x, y)
         
@@ -106,8 +110,22 @@ class RegionOfInterest(object):
             self.vertex_count += c.vertex_count       
         
         self._stats()
-    
-    
+  
+        end = [numpy.zeros((512, 512)), ]
+        stack = [c.mask for c in self.contours]
+        self.mask = numpy.dstack(end + stack + end)
+        self.mask[0, 0, 0] = 1   
+        self.mask[-1, -1, -1] = 1   
+
+        xmin, ymin, zmin = self.contours[0].position
+        xmax = xmin + (self.contours[0].resolution[0] * 512)
+        ymax = ymin + (self.contours[0].resolution[1] * 512)
+
+        zmin -= self.contours[0].thickness
+        zmax = zmin + (self.contours[0].thickness * (self.mask.shape[2] + 2))
+
+        self.extent = (xmin, xmax, ymin, ymax, zmin, zmax)
+
     def __len__(self):
         return len(self.contours)
     
@@ -158,7 +176,7 @@ class Patient(object):
                 print f
                 break
                 
-        self.structure = dicom.ReadFile("%s/%s" % (dicom_dir, dicom_structure))
+        self.structure = dicom.read_file("%s/%s" % (dicom_dir, dicom_structure))
         
         self.region_names = {}
         for i, roi in enumerate(self.structure.RTROIObservations):
